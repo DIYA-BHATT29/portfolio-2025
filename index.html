@@ -1,868 +1,459 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diya Bhatt A</title>
-    
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23050505"/><circle cx="50" cy="50" r="45" stroke="%2300e5ff" stroke-width="4" fill="none"/><path d="M50 5, 50 15 M50 95, 50 85 M5 50, 15 50 M95 50, 85 50" stroke="%23ff0055" stroke-width="4"/><text x="50" y="70" font-family="sans-serif" font-weight="900" font-size="45" text-anchor="middle" fill="%23ffffff" letter-spacing="-2">DB</text></svg>'>    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --cursor-size: 20px;
-            --cursor-hover-size: 80px;
-        }
-
-        body {
-            background-color: #0b0531;
-            color: #ffffff;
-            font-family: 'Space Grotesk', sans-serif;
-            overflow-x: hidden;
-            margin: 0;
-            cursor: none;
-        }
-
-        h1, h2, h3, .brand-font {
-            font-family: 'Syne', sans-serif;
-        }
-
-        .tech-font {
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #fff;
-        }
-
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 1.5s ease;
-        }
-
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        #cursor {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: var(--cursor-size);
-            height: var(--cursor-size);
-            border: 1px solid white;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background-color 0.3s;
-            mix-blend-mode: difference;
-        }
-        
-        #cursor-dot {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 4px;
-            background-color: white;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            transform: translate(-50%, -50%);
-        }
-
-        .hero-title {
-            font-size: clamp(2rem, 5.5vw, 5rem);
-            line-height: 1.05;
-            letter-spacing: -0.02em;
-            background: linear-gradient(to right, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .outline-text {
-            -webkit-text-stroke: 1px rgba(255,255,255,0.3);
-            color: transparent;
-            transition: all 0.5s ease;
-        }
-        .group:hover .outline-text {
-            color: white;
-            -webkit-text-stroke: 0px;
-        }
-
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .loader-bar {
-            width: 200px;
-            height: 2px;
-            background: #333;
-            margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .loader-progress {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            background: #fff;
-            width: 0%;
-            transition: width 0.5s;
-        }
-
-        .glitch-hover:hover {
-            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-            color: #ff3e3e;
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 2px) }
-            40% { transform: translate(-2px, -2px) }
-            60% { transform: translate(2px, 2px) }
-            80% { transform: translate(2px, -2px) }
-            100% { transform: translate(0) }
-        }
-
-        .logo-container {
-            display: flex;
-            flex-direction: column;
-            line-height: 0.85;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .logo-text {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            text-transform: uppercase;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            display: block;
-        }
-
-        .logo-top {
-            font-size: 1.5rem;
-            letter-spacing: -0.05em;
-            z-index: 2;
-        }
-
-        .logo-bottom {
-            font-size: 1.5rem;
-            letter-spacing: 0.05em;
-            color: rgba(255, 255, 255, 0.5);
-            z-index: 1;
-        }
-
-        .logo-container:hover .logo-top {
-            transform: skewX(-10deg) translateX(4px);
-            text-shadow: 2px 0 #00e5ff, -2px 0 #ff0055;
-            letter-spacing: 0.05em;
-        }
-
-        .logo-container:hover .logo-bottom {
-            transform: skewX(10deg) translateX(-4px);
-            color: #fff;
-            text-shadow: -2px 0 #00e5ff, 2px 0 #ff0055;
-            letter-spacing: 0.1em;
-        }
-
-        .warp-container {
-            height: 400vh;
-            position: relative;
-        }
-
-        .warp-sticky {
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
-        }
-
-        .warp-tunnel {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-        }
-
-        .warp-card {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 80%;
-            max-width: 500px;
-            transform: translate(-50%, -50%) translateZ(-1000px);
-            opacity: 0;
-            transition: box-shadow 0.3s;
-            will-change: transform, opacity;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(10, 10, 10, 0.7);
-            padding: 2rem;
-            border-radius: 1rem;
-            backdrop-filter: blur(8px);
-        }
-
-        .warp-card.active {
-            border-color: #00e5ff;
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.2);
-        }
-
-        .card-number {
-            position: absolute;
-            top: -20px;
-            left: 20px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 4rem;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.05);
-            z-index: 0;
-        }
-
-        .card-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .terminal-container {
-            perspective: 1000px;
-            transform-style: preserve-3d;
-        }
-
-        .terminal-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            transform: rotateX(20deg) scale(0.9);
-            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .terminal-container:hover .terminal-grid {
-            transform: rotateX(0deg) scale(1);
-        }
-
-        .signal-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .signal-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 2px;
-            height: 100%;
-            background: var(--signal-color, #fff);
-            transform: scaleY(0);
-            transition: transform 0.3s;
-            transform-origin: bottom;
-        }
-
-        .signal-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--signal-color, #fff);
-            box-shadow: 0 0 20px var(--signal-glow, rgba(255,255,255,0.1));
-            transform: translateZ(20px);
-        }
-
-        .signal-card:hover::before {
-            transform: scaleY(1);
-        }
-
-        .signal-icon {
-            font-size: 1.5rem;
-            color: rgba(255,255,255,0.5);
-            transition: color 0.3s;
-        }
-
-        .signal-card:hover .signal-icon {
-            color: var(--signal-color, #fff);
-        }
-
-        .status-display {
-            font-family: 'Orbitron', sans-serif;
-            color: #00e5ff;
-            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
-            min-height: 24px;
-            margin-bottom: 2rem;
-            letter-spacing: 0.2em;
-            font-size: 0.8rem;
-        }
-
-        @media (min-width: 768px) {
-            .terminal-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diya Bhatt A</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23050505"/><circle cx="50" cy="50" r="45" stroke="%2300e5ff" stroke-width="4" fill="none"/><text x="50" y="70" font-family="sans-serif" font-weight="900" font-size="45" text-anchor="middle" fill="%23ffffff">DB</text></svg>'>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--cursor-size:20px;--cursor-hover-size:80px}
+html{max-width:100%}
+body{max-width:100%;overflow-x:clip}
+body{background:#0b0531;color:#fff;font-family:'Space Grotesk',sans-serif;margin:0}
+h1,h2,h3,.brand-font{font-family:'Syne',sans-serif}
+.tech-font{font-family:'Orbitron',sans-serif}
+.hide-scrollbar{scrollbar-width:none}.hide-scrollbar::-webkit-scrollbar{display:none}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#000}::-webkit-scrollbar-thumb{background:#444;border-radius:4px}
+#canvas-container{position:fixed;inset:0;width:100%;height:100vh;z-index:-1;opacity:0;transition:opacity 1.5s}
+.glass-panel{background:rgba(255,255,255,.03);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 32px rgba(0,0,0,.37)}
+/* custom cursor only on mouse devices */
+#cursor,#cursor-dot{display:none}
+@media (hover:hover) and (pointer:fine){
+ body,a,button{cursor:none}
+ #cursor,#cursor-dot{display:block;position:fixed;top:0;left:0;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%)}
+ #cursor{width:var(--cursor-size);height:var(--cursor-size);border:1px solid #fff;z-index:9999;transition:width .3s,height .3s,background-color .3s;mix-blend-mode:difference}
+ #cursor-dot{width:4px;height:4px;background:#fff;z-index:10000}
+}
+.hero-title{font-size:clamp(2rem,8vw,5rem);line-height:1.05;letter-spacing:-.02em;background:linear-gradient(to right,#fff,#888);-webkit-background-clip:text;-webkit-text-fill-color:transparent;overflow-wrap:anywhere}
+.outline-text{-webkit-text-stroke:1px rgba(255,255,255,.3);color:transparent;transition:all .5s}
+.group:hover .outline-text{color:#fff;-webkit-text-stroke:0}
+#loader{position:fixed;inset:0;background:#000;z-index:100;display:flex;justify-content:center;align-items:center;flex-direction:column;text-align:center;padding:0 1rem;transition:opacity .5s}
+.loader-bar{width:200px;height:2px;background:#333;margin-top:20px;position:relative;overflow:hidden}
+.loader-progress{position:absolute;left:0;top:0;height:100%;background:#fff;width:0;transition:width .5s}
+.logo-container{display:flex;flex-direction:column;line-height:.85;position:relative}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;text-transform:uppercase;transition:all .3s;display:block;font-size:1.3rem}
+.logo-top{letter-spacing:-.05em}.logo-bottom{letter-spacing:.05em;color:rgba(255,255,255,.5)}
+.logo-container:hover .logo-top{transform:skewX(-10deg) translateX(4px);text-shadow:2px 0 #00e5ff,-2px 0 #ff0055}
+.logo-container:hover .logo-bottom{transform:skewX(10deg) translateX(-4px);color:#fff;text-shadow:-2px 0 #00e5ff,2px 0 #ff0055}
+#mobile-menu{display:none}
+#mobile-menu.open{display:flex}
+/* Trajectory warp */
+.warp-container{height:700vh;position:relative}
+.warp-sticky{position:sticky;top:0;height:100vh;width:100%;overflow:hidden;display:flex;justify-content:center;align-items:center;perspective:1000px}
+.warp-tunnel{position:relative;width:100%;height:100%;transform-style:preserve-3d}
+.warp-card{position:absolute;top:50%;left:50%;width:88%;max-width:520px;max-height:72vh;overflow:hidden;transform:translate(-50%,-50%) translateZ(-1000px);opacity:0;will-change:transform,opacity;border:1px solid rgba(255,255,255,.1);background:rgba(10,10,10,.75);padding:1.5rem;border-radius:1rem;backdrop-filter:blur(8px)}
+.warp-card.active{border-color:#00e5ff;box-shadow:0 0 30px rgba(0,229,255,.2)}
+.card-number{position:absolute;top:-14px;left:16px;font-family:'Orbitron',sans-serif;font-size:3.5rem;font-weight:900;color:rgba(255,255,255,.06)}
+.card-content{position:relative;z-index:1}
+@media(min-width:768px){.warp-card{padding:2rem}}
+/* Contact */
+.terminal-container{perspective:1000px}
+.terminal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;max-width:800px;margin:0 auto;transition:transform .6s cubic-bezier(.23,1,.32,1)}
+.signal-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);padding:1.1rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;position:relative;overflow:hidden;transition:all .3s;min-width:0}
+.signal-card>div{min-width:0;overflow-wrap:anywhere}
+.signal-card:hover{background:rgba(255,255,255,.08);border-color:var(--signal-color,#fff);box-shadow:0 0 20px var(--signal-glow,rgba(255,255,255,.1))}
+.signal-icon{font-size:1.4rem;color:rgba(255,255,255,.5);transition:color .3s}
+.signal-card:hover .signal-icon{color:var(--signal-color,#fff)}
+.status-display{font-family:'Orbitron',sans-serif;color:#00e5ff;text-shadow:0 0 10px rgba(0,229,255,.5);min-height:24px;margin-bottom:1.5rem;letter-spacing:.15em;font-size:.75rem;padding:0 .5rem}
+@media(min-width:768px){.terminal-grid{grid-template-columns:repeat(3,1fr);gap:1.5rem;transform:rotateX(20deg) scale(.9)}.terminal-container:hover .terminal-grid{transform:none}}
+@media(max-width:480px){.terminal-grid{grid-template-columns:1fr}}
+.chip{display:inline-block;padding:.3rem .75rem;margin:.2rem;border:1px solid rgba(255,255,255,.15);border-radius:999px;font-size:.8rem;color:#d1d5db}
+.reveal{opacity:0;transform:translateY(24px);transition:all .8s ease}.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+#bgm-btn{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:.6rem;padding:.6rem .9rem;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(8px);color:#fff;font-size:.65rem;letter-spacing:.15em}
+#bgm-btn:hover{background:rgba(255,255,255,.14)}
+#bgm-btn .bars{display:flex;align-items:flex-end;gap:2px;height:14px}
+#bgm-btn .bars i{width:3px;height:3px;background:#00e5ff;border-radius:1px;transition:height .3s}
+#bgm-btn.on .bars i{animation:eq 1s ease-in-out infinite}
+#bgm-btn.on .bars i:nth-child(2){animation-delay:.2s}
+#bgm-btn.on .bars i:nth-child(3){animation-delay:.4s}
+#bgm-btn.on .bars i:nth-child(4){animation-delay:.6s}
+@keyframes eq{0%,100%{height:3px}50%{height:14px}}
+@media (prefers-reduced-motion:reduce){#bgm-btn.on .bars i{animation:none;height:10px}}
+@media(max-width:480px){.bgm-label{display:none}}
+</style>
 </head>
 <body class="antialiased">
-
-    <div id="cursor"></div>
-    <div id="cursor-dot"></div>
-
-    <div id="loader">
-        <div class="text-4xl font-bold brand-font tracking-tighter">INITIALIZING SYSTEM</div>
-        <div class="loader-bar">
-            <div class="loader-progress" id="progress-bar"></div>
-        </div>
-        <div class="mt-2 text-xs text-gray-500 tech-font">LOADING ASSETS // WEB DEV// SPACE // AI</div>
-    </div>
-
-    <div id="canvas-container"></div>
-
-    <nav class="fixed top-0 w-full z-50 px-6 py-6 flex justify-between items-center mix-blend-difference text-white">
-        <a href="#" class="logo-container group">
-            <span class="logo-text logo-top">Diya </span>
-            <span class="logo-text logo-bottom">Bhatt A</span>
-        </a>
-        <div class="hidden md:flex gap-8 text-sm uppercase tracking-widest tech-font">
-            <a href="#about" class="hover-trigger hover:text-gray-400 transition-colors">Manifesto</a>
-            <a href="#interests" class="hover-trigger hover:text-gray-400 transition-colors">Nexus</a>
-            <a href="#journey" class="hover-trigger hover:text-gray-400 transition-colors">Journey</a>
-            <a href="#contact" class="hover-trigger hover:text-gray-400 transition-colors">Contact</a>
-        </div>
-        <button class="md:hidden text-2xl hover-trigger"><i class="fas fa-bars"></i></button>
-    </nav>
-
-    <main class="relative z-10">
-
-        <section class="min-h-screen flex flex-col justify-center px-6 md:px-20 pt-20 relative">
-            <div class="max-w-7xl">
-                <p class="text-sm md:text-base text-gray-400 mb-4 tech-font tracking-[0.2em] fade-in-up">
-                    HARDWARE<span class="mx-2 text-white">×</span>TECH<span class="mx-2 text-white">×</span> ARTS
-                </p>
-                <h1 class="hero-title font-extrabold mb-6 fade-in-up" style="animation-delay: 0.2s;">
-                    HEYLOO HUMAN, <br>
-                    I'M <br>
-                    <span class="italic font-light">Diya Bhatt A.</span>
-                </h1>
-                
-                <div class="flex flex-col md:flex-row gap-8 items-start md:items-center mt-8 fade-in-up" style="animation-delay: 0.4s;">
-                    <div class="glass-panel p-4 rounded-full flex items-center gap-4 hover-trigger cursor-pointer group transition-transform hover:scale-105">
-                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black">
-                            <i class="fas fa-arrow-down transform group-hover:rotate-45 transition-transform"></i>
-                        </div>
-                        <span class="pr-4 font-semibold">Explore the System</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="absolute bottom-10 right-10 text-right hidden md:block opacity-50">
-                <p class="tech-font text-xs">COORDINATES</p>
-                <p class="tech-font text-xs">25.0000° N, 71.0000° W</p>
-            </div>
-        </section>
-
-        <section id="about" class="min-h-screen py-24 px-6 md:px-20 flex items-center relative">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 w-full max-w-7xl mx-auto">
-                <div class="relative">
-                    <div class="sticky top-32">
-                        <h2 class="text-6xl md:text-8xl font-bold mb-8 brand-font outline-text opacity-30">
-                            THE<br>HYBRID
-                        </h2>
-                        <div class="h-1 w-20 bg-white mb-8"></div>
-                        <p class="text-xl md:text-2xl leading-relaxed font-light">
-                            "I'd tell you a firmware joke, but you'd need a reboot to get it."
-                        </p>
-                    </div>
-                </div>
-                <div class="space-y-12">
-                    <div class="glass-panel p-8 rounded-2xl hover:bg-white/5 transition-colors duration-500" data-aos>
-                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                            <i class="fas fa-chart-line text-blue-400"></i> The Techie
-                        </h3>
-                        <p class="text-gray-400">
-                            I build reliable, working systems.I turn ideas into real technology that scales and performs.
-                        </p>
-                    </div>
-                    
-                    <div class="glass-panel p-8 rounded-2xl hover:bg-white/5 transition-colors duration-500" data-aos>
-                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                            <i class="fas fa-pen-nib text-purple-400"></i> The Artist
-                        </h3>
-                        <p class="text-gray-400">
-                            "Creativity, systematically expressed."
-My medium spans pixels, data, and generative forms. I explore where intuition meets algorithm, crafting visual languages and experiences that are felt as much as they are understood.
-                        </p>
-                    </div>
-
-                    <div class="glass-panel p-8 rounded-2xl hover:bg-white/5 transition-colors duration-500" data-aos>
-                        <h3 class="text-2xl font-bold mb-4 flex items-center gap-3">
-                            <i class="fas fa-rocket text-red-400"></i> The Futurist
-                        </h3>
-                        <p class="text-gray-400">
-                            Obsessed with Visual Algorithms, Generative Systems, and Digital Craft. I design for an era where art is co-created with machines, and expression is encoded, iterated, and evolved in real-time
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="interests" class="py-32 relative overflow-hidden">
-            <div class="px-6 md:px-20 mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold brand-font">CORE INTERESTS</h2>
-                <p class="tech-font text-sm text-gray-500 mt-2">SCROLL TO ANALYZE</p>
-            </div>
-            
-            <div class="flex overflow-x-auto pb-12 px-6 md:px-20 gap-8 hide-scrollbar snap-x snap-mandatory">
-                
-                <div class="min-w-[300px] md:min-w-[400px] h-[500px] glass-panel rounded-3xl p-8 relative group cursor-none hover-trigger snap-center flex flex-col justify-between overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10">
-                        <i class="fas fa-rocket text-5xl mb-6 text-white/80 group-hover:text-blue-400 transition-colors"></i>
-                        <h3 class="text-3xl font-bold mb-2">Space & Astrophysics</h3>
-                        <p class="text-sm text-gray-400">Neural networks & Generative Design</p>
-                        <p class="mt-8 text-sm italic text-gray-300 font-light leading-relaxed">"Why aim for the sky when there are galaxies waiting?"</p>
-                    </div>
-                </div>
-
-                <div class="min-w-[300px] md:min-w-[400px] h-[500px] glass-panel rounded-3xl p-8 relative group cursor-none hover-trigger snap-center flex flex-col justify-between overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-orange-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10">
-                        <i class="fas fa-robot text-5xl mb-6 text-white/80 group-hover:text-blue-400 transition-colors"></i>
-                        <h3 class="text-3xl font-bold mb-2">Artificial Intelligence</h3>
-                        <p class="text-sm text-gray-400">Generative Models & Autonomous Systems</p>
-                        <p class="mt-8 text-sm italic text-gray-300 font-light leading-relaxed whitespace-pre-line">"It’s not just data—it’s imagination encoded in logic."</p>
-                    </div>
-                </div>
-
-                <div class="min-w-[300px] md:min-w-[400px] h-[500px] glass-panel rounded-3xl p-8 relative group cursor-none hover-trigger snap-center flex flex-col justify-between overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-green-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10">
-                        <i class="fas fa-microchip text-5xl mb-6 text-white/80 group-hover:text-blue-400 transition-colors"></i>
-                        <h3 class="text-3xl font-bold mb-2">Technology & Systems</h3>
-                        <p class="text-sm text-gray-400">Architecture, Automation & Future-Proof Code</p>
-                        <p class="mt-8 text-sm italic text-gray-300 font-light leading-relaxed">"Building tomorrow’s tools with yesterday’s lessons—scalable, silent, and strong."</p>
-                    </div>
-                </div>
-
-                <div class="min-w-[300px] md:min-w-[400px] h-[500px] glass-panel rounded-3xl p-8 relative group cursor-none hover-trigger snap-center flex flex-col justify-between overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-red-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10">
-                        <i class="fas fa-star text-5xl mb-6 text-white/80 group-hover:text-blue-400 transition-colors"></i>
-                        <h3 class="text-3xl font-bold mb-2">Astrology & Cosmic Symbology</h3>
-                        <p class="text-sm text-gray-400">Myth, Mapping & Meaning in the Stars</p>
-                        <p class="mt-8 text-sm italic text-gray-300 font-light leading-relaxed whitespace-pre-line">"We’ve coded machines to navigate the world, but the sky taught us navigation first"</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="journey" class="warp-container">
-            <div class="warp-sticky">
-                <h2 class="absolute top-10 left-0 w-full text-center text-4xl md:text-5xl font-bold brand-font z-50 mix-blend-difference pointer-events-none">TRAJECTORY LOG</h2>
-                
-                <div class="warp-tunnel">
-                    
-      
-                    <div class="warp-card hover-trigger" data-index="0">
-                        <div class="card-number">01</div>
-                        <div class="card-content">
-                            <span class="tech-font text-xs text-blue-400 mb-2 block">ORIGIN POINT</span>
-                            <h3 class="text-2xl font-bold mb-1">12th Bio-Maths</h3>
-                            <p class="text-lg text-gray-300">Kendriya Vidyalaya</p>
-                            <p class="text-sm text-gray-500 mt-4 border-t border-gray-700 pt-4">The place where it all began.</p>
-                        </div>
-                    </div>
-
-                    <div class="warp-card hover-trigger" data-index="1">
-                        <div class="card-number">02</div>
-                        <div class="card-content">
-                            <span class="tech-font text-xs text-purple-400 mb-2 block">ACADEMIC UPLINK</span>
-                            <h3 class="text-2xl font-bold mb-1">B.Tech in Electronics & Computer Engineering</h3>
-                            <p class="text-lg text-gray-300">LBSITW </p>
-                            <p class="text-sm text-gray-500 mt-4 border-t border-gray-700 pt-4">The goal was elegance. The result is a prototype. The takeaway is that it boots. I'm calling it a win.</p>
-                        </div>
-                    </div>
-
-
-                    <div class="warp-card hover-trigger" data-index="2">
-                        <div class="card-number">03</div>
-                        <div class="card-content">
-                            <span class="tech-font text-xs text-green-400 mb-2 block">CAREER INITIALIZATION</span>
-                            <h3 class="text-2xl font-bold mb-1">Entrepreneurship -IG LEAD.</h3>
-                            <p class="text-lg text-gray-300">µLearn Foundation</p>
-                            <p class="text-sm text-gray-500 mt-4 border-t border-gray-700 pt-4">Spearheaded community growth and technical engagement for a 900+ member tech club—boosting social media engagement by 60% and hosting talk sessions at college orientations to inspire involvement. Facilitated workshops, study jams, and large-scale hackathons to build competitive skills and foster hands-on learning for events like the Smart India Hackathon..</p>
-                        </div>
-                    </div>
-                        <div class="warp-card hover-trigger" data-index="3">
-                        <div class="card-number">04</div>
-                        <div class="card-content">
-                            <span class="tech-font text-xs text-yellow-400 mb-2 block">LEADERSHIP MODULE</span>
-                            <h3 class="text-2xl font-bold mb-1">TECH-LEAD</h3>
-                            <p class="text-lg text-gray-300">IEDC-LBSITW</p>
-                            <p class="text-sm text-gray-500 mt-4 border-t border-gray-700 pt-4">Served as Tech Lead, driving technological innovation and managing student technical projects to cultivate a startup-friendly environment.Held and led technical workshops, assisted teams in prototype development, and connected students with industry mentors in alignment with the Kerala Startup Mission’s entrepreneurial goals.</p>
-                        </div>
-                    </div>
-                     <div class="warp-card hover-trigger" data-index="3">
-                        <div class="card-number">05</div>
-                        <div class="card-content">
-                            <span class="tech-font text-xs text-yellow-400 mb-2 block">LEADERSHIP MODULE</span>
-                            <h3 class="text-2xl font-bold mb-1">Editorial-LEAD</h3>
-                            <p class="text-lg text-gray-300">SPACE CLUB-LBSITW</p>
-                            <p class="text-sm text-gray-500 mt-4 border-t border-gray-700 pt-4"></p>
-                        </div>
-                    </div>
-
-
-                    <div class="warp-card hover-trigger" data-index="4">
-                        <div class="card-number">05</div>
-                        <div class="card-content">
-                            <span class="tech-font text-xs text-red-400 mb-2 block flex items-center gap-2">
-                                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> CURRENT ORBIT
-                            </span>
-                            <h3 class="text-2xl font-bold mb-1">Executive Director </h3>
-                            <p class="text-lg text-gray-300">MUN LBSITW</p>
-                            <p class="text-sm text-gray-500 mt-4 border-t border-gray-700 pt-4 text-white">I play a pivotal role in managing operations and fostering coordination to strengthen our MUN society's intellectual foundation and empower members to lead with wisdom, grace, strategy, and foresight.</p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <footer id="contact" class="py-24 px-6 md:px-20 text-center relative overflow-hidden min-h-screen flex flex-col justify-center">
-            <div class="absolute inset-0 bg-gradient-to-t from-blue-900/10 to-transparent pointer-events-none"></div>
-            
-            <h2 class="text-4xl md:text-6xl font-black brand-font mb-4 tracking-tighter hover:tracking-wide transition-all duration-700 cursor-pointer hover-trigger">
-                ESTABLISH UPLINK
-            </h2>
-            
-            <div class="terminal-container w-full z-10 mt-12">
-                <div class="status-display" id="terminal-status">SYSTEM STANDBY // AWAITING INPUT</div>
-
-                <div class="terminal-grid">
-                    <a href="mailto:diyabhatta2005@gmail.com" class="signal-card group hover-trigger" style="--signal-color: #ff0055; --signal-glow: rgba(255, 0, 85, 0.4);" onmouseenter="updateStatus('INITIATING SECURE MAIL PROTOCOL')" onmouseleave="resetStatus()">
-                        <div class="text-left">
-                            <div class="text-xs text-gray-500 tech-font">CONNECT</div>
-                            <div class="font-bold">EMAIL</div>
-                        </div>
-                        <i class="fas fa-envelope signal-icon"></i>
-                    </a>
-
-                    <a href="https://www.linkedin.com/in/diyabhatta/" target="_blank" class="signal-card group hover-trigger" style="--signal-color: #0077b5; --signal-glow: rgba(0, 119, 181, 0.4);" onmouseenter="updateStatus('ACCESSING PROFESSIONAL NETWORK')" onmouseleave="resetStatus()">
-                        <div class="text-left">
-                            <div class="text-xs text-gray-500 tech-font">LINKEDIN</div>
-                            <div class="font-bold">PROFILE</div>
-                        </div>
-                        <i class="fab fa-linkedin-in signal-icon"></i>
-                    </a>
-
-                    <a href="https://x.com/DiyaBhattA67941" target="_blank" class="signal-card group hover-trigger" style="--signal-color: #ffffff; --signal-glow: rgba(255, 255, 255, 0.4);" onmouseenter="updateStatus('DECODING SHORT-WAVE TRANSMISSIONS')" onmouseleave="resetStatus()">
-                        <div class="text-left">
-                            <div class="text-xs text-gray-500 tech-font">TWITTER / X</div>
-                            <div class="font-bold">FEED</div>
-                        </div>
-                        <i class="fab fa-twitter signal-icon"></i>
-                    </a>
-
-                    <a href="https://github.com/DIYA-BHATT29" target="_blank" class="signal-card group hover-trigger" style="--signal-color: #2dba4e; --signal-glow: rgba(45, 186, 78, 0.4);" onmouseenter="updateStatus('INSPECTING SOURCE CODE REPOSITORIES')" onmouseleave="resetStatus()">
-                        <div class="text-left">
-                            <div class="text-xs text-gray-500 tech-font">GITHUB</div>
-                            <div class="font-bold">CODEBASE</div>
-                        </div>
-                        <i class="fab fa-github signal-icon"></i>
-                    </a>
-
-                    
-                    </a>
-                </div>
-            </div>
-
-            <p class="mt-24 text-xs text-gray-600 tech-font tracking-widest opacity-60 hover:opacity-100 transition-opacity">
-                DESIGNED WITH PASSION, MADE WITH LOVE - diya
-            </p>
-        </footer>
-
-   </main>
-
-    <script>
-        const cursor = document.getElementById('cursor');
-        const cursorDot = document.getElementById('cursor-dot');
-        const hoverTriggers = document.querySelectorAll('.hover-trigger');
-
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            cursorDot.style.left = e.clientX + 'px';
-            cursorDot.style.top = e.clientY + 'px';
-        });
-
-        document.addEventListener('mousedown', () => {
-            cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
-        });
-
-        document.addEventListener('mouseup', () => {
-            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-        });
-
-        hoverTriggers.forEach(link => {
-            link.addEventListener('mouseenter', () => {
-                cursor.style.width = 'var(--cursor-hover-size)';
-                cursor.style.height = 'var(--cursor-hover-size)';
-                cursor.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                cursor.style.backdropFilter = 'blur(2px)';
-                cursorDot.style.display = 'none';
-            });
-            link.addEventListener('mouseleave', () => {
-                cursor.style.width = 'var(--cursor-size)';
-                cursor.style.height = 'var(--cursor-size)';
-                cursor.style.backgroundColor = 'transparent';
-                cursor.style.backdropFilter = 'none';
-                cursorDot.style.display = 'block';
-            });
-        });
-        
-        const journeySection = document.getElementById('journey');
-        const warpCards = document.querySelectorAll('.warp-card');
-
-        window.addEventListener('scroll', () => {
-            if (!journeySection) return;
-
-            const rect = journeySection.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            
-            const totalScrollableDistance = rect.height - windowHeight;
-            let progress = -rect.top / totalScrollableDistance;
-            
-            if (rect.top <= windowHeight && rect.bottom >= 0) {
-                warpCards.forEach((card, index) => {
-                    const cardStart = index * 0.15;
-                    const cardEnd = cardStart + 0.4;
-                    
-                    let cardProgress = (progress - cardStart) / (cardEnd - cardStart);
-                    
-                    if (cardProgress < 0) cardProgress = 0;
-                    if (cardProgress > 1.5) cardProgress = 1.5;
-                    
-                    const zPos = -1500 + (cardProgress * 2500);
-                    
-                    let opacity = 0;
-                    if (zPos > -1000 && zPos < 200) {
-                        opacity = 1 - (Math.abs(zPos + 200) / 800);
-                        if (opacity > 1) opacity = 1;
-                        if (zPos > -200 && zPos < 100) opacity = 1;
-                    } else if (zPos >= 200) {
-                         opacity = 1 - ((zPos - 200) / 300);
-                    }
-                    if (opacity < 0) opacity = 0;
-
-                    const rotateX = (progress - 0.5) * 10;
-                    const rotateY = (index % 2 === 0 ? 1 : -1) * 5 * (1 - cardProgress);
-
-                    card.style.transform = `translate(-50%, -50%) translate3d(0, 0, ${zPos}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-                    card.style.opacity = opacity;
-                    
-                    if (zPos > -300 && zPos < 100) {
-                        card.classList.add('active');
-                    } else {
-                        card.classList.remove('active');
-                    }
-                });
-            }
-        });
-
-        const initThree = () => {
-            const container = document.getElementById('canvas-container');
-            const scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x050505, 0.002);
-
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-            camera.position.z = 1000;
-
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            container.appendChild(renderer.domElement);
-
-            const geo1 = new THREE.IcosahedronGeometry(400, 2);
-            const mat1 = new THREE.MeshBasicMaterial({ 
-                color: 0x444444, 
-                wireframe: true, 
-                transparent: true, 
-                opacity: 0.1 
-            });
-            const structure = new THREE.Mesh(geo1, mat1);
-            scene.add(structure);
-
-            const particleGeo = new THREE.BufferGeometry();
-            const particleCount = 2000;
-            const posArray = new Float32Array(particleCount * 3);
-
-            for(let i = 0; i < particleCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 4000;
-            }
-
-            particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particleMat = new THREE.PointsMaterial({
-                size: 2,
-                color: 0xffffff,
-                transparent: true,
-                opacity: 0.8,
-            });
-            const particles = new THREE.Points(particleGeo, particleMat);
-            scene.add(particles);
-
-            const shapes = [];
-            const addShape = (color, x, y, z) => {
-                const geometry = new THREE.OctahedronGeometry(20, 0);
-                const material = new THREE.MeshBasicMaterial({ color: color, wireframe: true });
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.set(x, y, z);
-                scene.add(mesh);
-                shapes.push(mesh);
-            }
-
-            for(let i=0; i<10; i++) {
-                addShape(0x00aaff, (Math.random()-0.5)*1000, (Math.random()-0.5)*1000, (Math.random()-0.5)*1000);
-            }
-
-            let mouseX = 0;
-            let mouseY = 0;
-            let targetX = 0;
-            let targetY = 0;
-
-            const windowHalfX = window.innerWidth / 2;
-            const windowHalfY = window.innerHeight / 2;
-
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX - windowHalfX);
-                mouseY = (event.clientY - windowHalfY);
-            });
-
-            let scrollY = 0;
-            window.addEventListener('scroll', () => {
-                scrollY = window.scrollY;
-            });
-
-            const clock = new THREE.Clock();
-
-            const animate = () => {
-                const elapsedTime = clock.getElapsedTime();
-
-                targetX = mouseX * 0.001;
-                targetY = mouseY * 0.001;
-
-                structure.rotation.y += 0.002;
-                structure.rotation.x += 0.001;
-                
-                const scale = 1 + Math.sin(elapsedTime * 0.5) * 0.05;
-                structure.scale.set(scale, scale, scale);
-
-                particles.rotation.y = elapsedTime * 0.05;
-                particles.rotation.x = scrollY * 0.0005;
-
-                structure.rotation.y += 0.05 * (targetX - structure.rotation.y);
-                structure.rotation.x += 0.05 * (targetY - structure.rotation.x);
-
-                camera.position.z = 1000 - (scrollY * 0.5);
-                
-                shapes.forEach((shape, i) => {
-                    shape.rotation.x += 0.01;
-                    shape.rotation.y += 0.01;
-                    shape.position.y += Math.sin(elapsedTime + i) * 0.5;
-                });
-
-                renderer.render(scene, camera);
-                requestAnimationFrame(animate);
-            };
-
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        };
-
-        function updateStatus(text) {
-            const statusEl = document.getElementById('terminal-status');
-            statusEl.innerText = text + '...';
-            statusEl.style.textShadow = "0 0 15px rgba(0, 229, 255, 0.8)";
-            statusEl.style.color = "#fff";
-        }
-
-        function resetStatus() {
-            const statusEl = document.getElementById('terminal-status');
-            statusEl.innerText = 'SYSTEM STANDBY // AWAITING INPUT';
-            statusEl.style.textShadow = "0 0 10px rgba(0, 229, 255, 0.5)";
-            statusEl.style.color = "#00e5ff";
-        }
-
-        window.addEventListener('load', () => {
-            const progressBar = document.getElementById('progress-bar');
-            const loader = document.getElementById('loader');
-            const canvasContainer = document.getElementById('canvas-container');
-
-            setTimeout(() => { progressBar.style.width = '50%'; }, 200);
-            setTimeout(() => { progressBar.style.width = '100%'; }, 800);
-            
-            setTimeout(() => {
-                loader.style.opacity = '0';
-                canvasContainer.style.opacity = '1';
-                initThree();
-                
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                }, 500);
-            }, 1200);
-        });
-    </script>
+<div id="cursor"></div><div id="cursor-dot"></div>
+<button id="bgm-btn" aria-label="Toggle background music" aria-pressed="false" title="Music"><span class="bars"><i></i><i></i><i></i><i></i></span><span class="bgm-label tech-font">SOUND OFF</span></button>
+
+<div id="loader">
+ <div class="text-2xl md:text-4xl font-bold brand-font tracking-tighter">INITIALIZING SYSTEM</div>
+ <div class="loader-bar"><div class="loader-progress" id="progress-bar"></div></div>
+ <div class="mt-2 text-xs text-gray-500 tech-font">LOADING ASSETS // WEB DEV // CLOUD // AI</div>
+</div>
+<div id="canvas-container"></div>
+
+<nav class="fixed top-0 w-full z-50 px-5 md:px-6 py-4 md:py-6 flex justify-between items-center mix-blend-difference text-white">
+ <a href="#" class="logo-container group"><span class="logo-text logo-top">Diya </span><span class="logo-text logo-bottom">Bhatt A</span></a>
+ <div class="hidden lg:flex gap-6 xl:gap-8 text-xs xl:text-sm uppercase tracking-widest tech-font">
+  <a href="#about" class="hover:text-gray-400">Manifesto</a>
+  <a href="#skills" class="hover:text-gray-400">Stack</a>
+  <a href="#projects" class="hover:text-gray-400">Projects</a>
+  <a href="#interests" class="hover:text-gray-400">Nexus</a>
+  <a href="#journey" class="hover:text-gray-400">Journey</a>
+  <a href="#achievements" class="hover:text-gray-400">Wins</a>
+  <a href="#contact" class="hover:text-gray-400">Contact</a>
+ </div>
+ <button id="menu-btn" aria-label="Toggle menu" aria-expanded="false" class="lg:hidden text-2xl p-2"><i class="fas fa-bars"></i></button>
+</nav>
+
+<div id="mobile-menu" class="fixed inset-0 z-40 bg-black/95 flex-col items-center justify-center gap-6 text-lg uppercase tracking-widest tech-font">
+ <a href="#about">Manifesto</a><a href="#skills">Stack</a><a href="#projects">Projects</a><a href="#interests">Nexus</a><a href="#journey">Journey</a><a href="#achievements">Wins</a><a href="#contact">Contact</a>
+</div>
+
+<main class="relative z-10">
+
+<!-- HERO -->
+<section class="min-h-screen flex flex-col justify-center px-5 md:px-20 pt-24 pb-12 relative">
+ <div class="max-w-7xl">
+  <p class="text-xs md:text-base text-gray-400 mb-4 tech-font tracking-[0.2em]">HARDWARE<span class="mx-2 text-white">×</span>TECH<span class="mx-2 text-white">×</span>ARTS</p>
+  <h1 class="hero-title font-extrabold mb-6">HEYLOO HUMAN, <br>I'M <br><span class="italic font-light">Diya Bhatt A.</span></h1>
+  <p class="max-w-2xl text-gray-300 text-sm md:text-lg leading-relaxed">B.Tech Electronics and Computer Engineering student and full-stack developer building web and AI applications with Python, JavaScript, Flask/FastAPI and the MERN/MEVN stacks, deployed on the cloud.</p>
+  <div class="flex flex-wrap gap-4 items-center mt-8">
+   <a href="#about" class="glass-panel p-3 pr-6 rounded-full flex items-center gap-4 group transition-transform hover:scale-105">
+    <span class="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center text-black"><i class="fas fa-arrow-down group-hover:rotate-45 transition-transform"></i></span>
+    <span class="font-semibold">Explore the System</span>
+   </a>
+  </div>
+ </div>
+ <div class="absolute bottom-10 right-10 text-right hidden md:block opacity-50"><p class="tech-font text-xs">COORDINATES</p><p class="tech-font text-xs">25.0000° N, 71.0000° W</p></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-20 md:py-24 px-5 md:px-20 flex items-center relative">
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 w-full max-w-7xl mx-auto">
+  <div>
+   <div class="md:sticky md:top-32">
+    <h2 class="text-5xl sm:text-6xl md:text-8xl font-bold mb-6 brand-font outline-text opacity-30">THE<br>HYBRID</h2>
+    <div class="h-1 w-20 bg-white mb-6"></div>
+    <p class="text-lg md:text-2xl leading-relaxed font-light">"I'd tell you a firmware joke, but you'd need a reboot to get it."</p>
+    <p class="mt-6 text-sm text-gray-400 leading-relaxed">Strong in problem-solving, teamwork and technical communication, with experience in AI/ML integration, REST API development, responsive UI, technical leadership and developer-community initiatives.</p>
+   </div>
+  </div>
+  <div class="space-y-6 md:space-y-12">
+   <div class="glass-panel p-6 md:p-8 rounded-2xl reveal"><h3 class="text-xl md:text-2xl font-bold mb-3 flex items-center gap-3"><i class="fas fa-chart-line text-blue-400"></i> The Techie</h3><p class="text-gray-400">I build reliable, working systems. I turn ideas into real technology that scales and performs.</p></div>
+   <div class="glass-panel p-6 md:p-8 rounded-2xl reveal"><h3 class="text-xl md:text-2xl font-bold mb-3 flex items-center gap-3"><i class="fas fa-pen-nib text-purple-400"></i> The Artist</h3><p class="text-gray-400">"Creativity, systematically expressed." My medium spans pixels, data, and generative forms. I explore where intuition meets algorithm, crafting visual languages and experiences that are felt as much as they are understood.</p></div>
+   <div class="glass-panel p-6 md:p-8 rounded-2xl reveal"><h3 class="text-xl md:text-2xl font-bold mb-3 flex items-center gap-3"><i class="fas fa-rocket text-red-400"></i> The Futurist</h3><p class="text-gray-400">Obsessed with Visual Algorithms, Generative Systems, and Digital Craft. I design for an era where art is co-created with machines, and expression is encoded, iterated, and evolved in real-time.</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="py-20 md:py-24 px-5 md:px-20">
+ <div class="max-w-7xl mx-auto">
+  <h2 class="text-3xl md:text-5xl font-bold brand-font mb-2">TECH STACK</h2>
+  <p class="tech-font text-xs md:text-sm text-gray-500 mb-10">TOOLS I BUILD WITH</p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6" id="skills-grid"></div>
+ </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="py-20 md:py-24 px-5 md:px-20">
+ <div class="max-w-7xl mx-auto">
+  <h2 class="text-3xl md:text-5xl font-bold brand-font mb-2">PROJECTS</h2>
+  <p class="tech-font text-xs md:text-sm text-gray-500 mb-10">THINGS I'VE SHIPPED</p>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
+   <article class="glass-panel rounded-2xl p-6 md:p-8 reveal">
+    <i class="fas fa-comments-dollar text-3xl text-blue-400 mb-4"></i>
+    <h3 class="text-xl md:text-2xl font-bold mb-3">AI Financial Advisor Chatbot</h3>
+    <p class="text-gray-400 text-sm leading-relaxed mb-4">An AI chatbot for budgeting, investments and taxes, with secure API handling and a responsive UI, deployed on Render.</p>
+    <div><span class="chip">Flask</span><span class="chip">FastAPI</span><span class="chip">OpenRouter</span><span class="chip">DeepSeek</span><span class="chip">Gemini API</span></div>
+   </article>
+   <article class="glass-panel rounded-2xl p-6 md:p-8 reveal">
+    <i class="fas fa-eye text-3xl text-purple-400 mb-4"></i>
+    <h3 class="text-xl md:text-2xl font-bold mb-3">YOLO-Vision</h3>
+    <p class="text-gray-400 text-sm leading-relaxed mb-4">A real-time object detection system that detects people and multiple objects in live video streams.</p>
+    <div><span class="chip">YOLO</span><span class="chip">Python</span><span class="chip">OpenCV</span></div>
+   </article>
+   <article class="glass-panel rounded-2xl p-6 md:p-8 reveal">
+    <i class="fas fa-user-check text-3xl text-green-400 mb-4"></i>
+    <h3 class="text-xl md:text-2xl font-bold mb-3">AttendX</h3>
+    <p class="text-gray-400 text-sm leading-relaxed mb-4">A smart attendance system with student and teacher authentication and duty-leave and missed-class workflows.</p>
+    <div><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Firebase</span></div>
+   </article>
+  </div>
+  <a href="https://github.com/DIYA-BHATT29" target="_blank" rel="noopener" class="inline-block mt-8 text-sm tech-font tracking-widest border-b border-white/40 pb-1 hover:border-white">MORE ON GITHUB</a>
+ </div>
+</section>
+
+<!-- INTERESTS -->
+<section id="interests" class="py-20 md:py-32 relative overflow-hidden">
+ <div class="px-5 md:px-20 mb-10 md:mb-16"><h2 class="text-3xl md:text-5xl font-bold brand-font">CORE INTERESTS</h2><p class="tech-font text-xs md:text-sm text-gray-500 mt-2">SWIPE TO ANALYZE</p></div>
+ <div class="flex overflow-x-auto pb-8 px-5 md:px-20 gap-5 md:gap-8 hide-scrollbar snap-x snap-mandatory">
+  <div class="w-[78vw] max-w-[400px] shrink-0 h-[380px] md:h-[500px] glass-panel rounded-3xl p-6 md:p-8 relative group snap-center flex flex-col justify-between overflow-hidden">
+   <div class="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+   <div class="relative z-10"><i class="fas fa-rocket text-4xl md:text-5xl mb-6 text-white/80 group-hover:text-blue-400 transition-colors"></i><h3 class="text-2xl md:text-3xl font-bold mb-2">Space & Astrophysics</h3><p class="text-sm text-gray-400">Neural networks & Generative Design</p><p class="mt-8 text-sm italic text-gray-300 font-light leading-relaxed">"Why aim for the sky when there are galaxies waiting?"</p></div>
+  </div>
+  <div class="w-[78vw] max-w-[400px] shrink-0 h-[380px] md:h-[500px] glass-panel rounded-3xl p-6 md:p-8 relative group snap-center flex flex-col justify-between overflow-hidden">
+   <div class="absolute inset-0 bg-gradient-to-b from-orange-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+   <div class="relative z-10"><i class="fas fa-robot text-4xl md:text-5xl mb-6 text-white/80 group-hover:text-blue-400 transition-colors"></i><h3 class="text-2xl md:text-3xl font-bold mb-2">Artificial Intelligence</h3><p class="text-sm text-gray-400">Generative Models & Autonomous Systems</p><p class="mt-8 text-sm italic text-gray-300 font-light leading-relaxed">"It’s not just data—it’s imagination encoded in logic."</p></div>
+  </div>
+  <div class="w-[78vw] max-w-[400px] shrink-0 h-[380px] md:h-[500px] glass-panel rounded-3xl p-6 md:p-8 relative group snap-center flex flex-col justify-between overflow-hidden">
+   <div class="absolute inset-0 bg-gradient-to-b from-green-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+   <div class="relative z-10"><i class="fas fa-microchip text-4xl md:text-5xl mb-6 text-white/80 group-hover:text-blue-400 transition-colors"></i><h3 class="text-2xl md:text-3xl font-bold mb-2">Technology & Systems</h3><p class="text-sm text-gray-400">Architecture, Automation & Future-Proof Code</p><p class="mt-8 text-sm italic text-gray-300 font-light leading-relaxed">"Building tomorrow’s tools with yesterday’s lessons—scalable, silent, and strong."</p></div>
+  </div>
+  <div class="w-[78vw] max-w-[400px] shrink-0 h-[380px] md:h-[500px] glass-panel rounded-3xl p-6 md:p-8 relative group snap-center flex flex-col justify-between overflow-hidden">
+   <div class="absolute inset-0 bg-gradient-to-b from-red-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+   <div class="relative z-10"><i class="fas fa-star text-4xl md:text-5xl mb-6 text-white/80 group-hover:text-blue-400 transition-colors"></i><h3 class="text-2xl md:text-3xl font-bold mb-2">Astrology & Cosmic Symbology</h3><p class="text-sm text-gray-400">Myth, Mapping & Meaning in the Stars</p><p class="mt-8 text-sm italic text-gray-300 font-light leading-relaxed">"We’ve coded machines to navigate the world, but the sky taught us navigation first."</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- JOURNEY (cards generated from the list below) -->
+<section id="journey" class="warp-container">
+ <div class="warp-sticky">
+  <h2 class="absolute top-20 md:top-10 left-0 w-full text-center text-2xl md:text-5xl font-bold brand-font z-50 mix-blend-difference pointer-events-none">TRAJECTORY LOG</h2>
+  <div class="warp-tunnel" id="warp-tunnel"></div>
+ </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements" class="py-20 md:py-24 px-5 md:px-20">
+ <div class="max-w-5xl mx-auto">
+  <h2 class="text-3xl md:text-5xl font-bold brand-font mb-2">ACHIEVEMENTS</h2>
+  <p class="tech-font text-xs md:text-sm text-gray-500 mb-10">RECOGNITION & COMMUNITY</p>
+  <ul class="grid grid-cols-1 md:grid-cols-2 gap-4" id="ach-list"></ul>
+</div>
+</section>
+
+<!-- CONTACT -->
+<footer id="contact" class="py-20 md:py-24 px-5 md:px-20 text-center relative overflow-hidden min-h-screen flex flex-col justify-center">
+ <div class="absolute inset-0 bg-gradient-to-t from-blue-900/10 to-transparent pointer-events-none"></div>
+ <h2 class="text-3xl sm:text-4xl md:text-6xl font-black brand-font mb-4 tracking-tighter">ESTABLISH UPLINK</h2>
+ <p class="text-gray-400 text-sm">Thiruvananthapuram, Kerala, India</p>
+ <div class="terminal-container w-full z-10 mt-10">
+  <div class="status-display" id="terminal-status">SYSTEM STANDBY // AWAITING INPUT</div>
+  <div class="terminal-grid">
+   <a href="mailto:diyabhatta2005@gmail.com" class="signal-card" style="--signal-color:#ff0055;--signal-glow:rgba(255,0,85,.4)" onmouseenter="updateStatus('INITIATING SECURE MAIL PROTOCOL')" onmouseleave="resetStatus()"><div class="text-left"><div class="text-xs text-gray-500 tech-font">CONNECT</div><div class="font-bold">EMAIL</div></div><i class="fas fa-envelope signal-icon"></i></a>
+   <a href="https://www.linkedin.com/in/diyabhatta/" target="_blank" rel="noopener" class="signal-card" style="--signal-color:#0077b5;--signal-glow:rgba(0,119,181,.4)" onmouseenter="updateStatus('ACCESSING PROFESSIONAL NETWORK')" onmouseleave="resetStatus()"><div class="text-left"><div class="text-xs text-gray-500 tech-font">LINKEDIN</div><div class="font-bold">PROFILE</div></div><i class="fab fa-linkedin-in signal-icon"></i></a>
+   <a href="https://x.com/DiyaBhattA67941" target="_blank" rel="noopener" class="signal-card" style="--signal-color:#fff;--signal-glow:rgba(255,255,255,.4)" onmouseenter="updateStatus('DECODING SHORT-WAVE TRANSMISSIONS')" onmouseleave="resetStatus()"><div class="text-left"><div class="text-xs text-gray-500 tech-font">TWITTER / X</div><div class="font-bold">FEED</div></div><i class="fab fa-twitter signal-icon"></i></a>
+   <a href="https://github.com/DIYA-BHATT29" target="_blank" rel="noopener" class="signal-card" style="--signal-color:#2dba4e;--signal-glow:rgba(45,186,78,.4)" onmouseenter="updateStatus('INSPECTING SOURCE CODE REPOSITORIES')" onmouseleave="resetStatus()"><div class="text-left"><div class="text-xs text-gray-500 tech-font">GITHUB</div><div class="font-bold">CODEBASE</div></div><i class="fab fa-github signal-icon"></i></a>
+  </div>
+ </div>
+ <p class="mt-16 text-xs text-gray-600 tech-font tracking-widest opacity-60 hover:opacity-100 transition-opacity">DESIGNED WITH PASSION, MADE WITH LOVE - diya</p>
+</footer>
+</main>
+
+<script>
+/* ---------- DATA ---------- */
+const skills=[
+ ['fa-code','text-blue-400','Languages',['Python','JavaScript','C','Java']],
+ ['fa-layer-group','text-purple-400','Frameworks / Stacks',['MERN','MEVN','Flask','FastAPI','Flutter']],
+ ['fa-globe','text-green-400','Web Technologies',['HTML','CSS','Markdown']],
+ ['fa-screwdriver-wrench','text-yellow-400','Tools / Platforms',['Git','GitHub','Docker','Kubernetes','Linux','Firebase','Render','Notion']],
+ ['fa-brain','text-red-400','Core Competencies',['REST API Development','AI/ML Integration','Secure Authentication','UI/UX Design','Technical Writing','Content Strategy','Problem Solving','Team Leadership']]
+];
+const journey=[
+ {tag:'ORIGIN POINT',c:'text-blue-400',t:'12th Bio-Maths',o:'Kendriya Vidyalaya',d:'The place where it all began.'},
+ {tag:'ACADEMIC UPLINK',c:'text-purple-400',t:'B.Tech, Electronics & Computer Engineering',o:'LBS Institute of Technology for Women, Poojappura',m:'Sep 2023 – Present · CGPA 7.47',d:'The goal was elegance. The result is a prototype. The takeaway is that it boots. I’m calling it a win.'},
+ {tag:'CAREER INITIALIZATION',c:'text-green-400',t:'Content Lead',o:'Google Developer Student Clubs, LBSITW',m:'Jun 2024 – Apr 2025',d:'Led content strategy, social media outreach and event promotion, increasing engagement by 60% for a 900+ member student community.'},
+ {tag:'LEADERSHIP MODULE',c:'text-yellow-400',t:'Technology Lead',o:'IEDC LBSITW',m:'Jan 2025 – Present',d:'Led technical workshops, innovation challenges and entrepreneurship initiatives, impacting 200+ students through collaboration with industry experts and faculty.'},
+ {tag:'LEADERSHIP MODULE',c:'text-yellow-400',t:'Editorial Team Lead',o:'Space Club LBSITW',m:'Jan 2025 – Present',d:'Led content strategy, digital outreach and newsletter initiatives to increase student engagement and awareness of space science and technology.'},
+ {tag:'INTERNSHIP',c:'text-green-400',t:'Intern, Entrepreneurship IG',o:'GTech µLearn Foundation, Technopark, Trivandrum',m:'Jun 2025 – Jan 2026',d:'Designed structured community tasks, supported open-source WikiSyllabus, conducted SIH technical orientation sessions and represented µLearn at IndiaFOSS 2025.'},
+ {tag:'CLOUD COMMUNITY',c:'text-orange-400',t:'AWS SBG Leader & Community Representative',o:'AWS Student Builder Group, LBSITW',d:'Selected as the on-campus AWS Student Builder Group leader. Represented LBSITW at CloudCraft Day 2 and led cloud and AWS knowledge sharing with students.'},
+ {tag:'CURRENT ORBIT',c:'text-red-400',live:true,t:'Executive Director',o:'MUN LBSITW',d:'I play a pivotal role in managing operations and fostering coordination to strengthen our MUN society’s intellectual foundation and empower members to lead with wisdom, grace, strategy and foresight.'}
+];
+const achievements=[
+ ['fa-trophy','Top 5 Finalist','Allianz Innovation Marathon 2026'],
+ ['fa-medal','Top 3','Circuit Debugging, PRAYAAG LBSITW'],
+ ['fa-medal','Top 5','HACK-THE-STACK, FOSS LBSITW'],
+ ['fa-hand-holding-heart','Official Volunteer','IndiaFOSS Team, 2026'],
+ ['fa-cloud','AWS SBG Lead at Campus','Represented LBSITW’s AWS Student Builder Group at CloudCraft Day 2, hosted by RIET Vidhya Saadhanam'],
+ ['fa-people-group','Student Community Representative','Beyond Syllabus: Bridge the Gap 4.0, representing the AWS User Group at a symposium on the future of education'],
+ ['fa-certificate','NPTEL Certification','Computer Networks and Internet Protocol, IIT Kharagpur'],
+ ['fa-certificate','NPTEL Certification','Cloud Computing, IIT Kharagpur']
+];
+
+/* ---------- RENDER ---------- */
+document.getElementById('skills-grid').innerHTML=skills.map(s=>`
+ <div class="glass-panel rounded-2xl p-6 reveal ${s[2]==='Core Competencies'?'sm:col-span-2 lg:col-span-3':''}">
+  <h3 class="text-lg font-bold mb-3 flex items-center gap-3"><i class="fas ${s[0]} ${s[1]}"></i>${s[2]}</h3>
+  <div>${s[3].map(x=>`<span class="chip">${x}</span>`).join('')}</div>
+ </div>`).join('');
+
+document.getElementById('ach-list').innerHTML=achievements.map(a=>`
+ <li class="glass-panel rounded-2xl p-5 flex gap-4 items-start reveal">
+  <i class="fas ${a[0]} text-xl text-yellow-400 mt-1"></i>
+  <div class="min-w-0"><h3 class="font-bold">${a[1]}</h3><p class="text-sm text-gray-400 mt-1">${a[2]}</p></div>
+ </li>`).join('');
+
+const tunnel=document.getElementById('warp-tunnel');
+tunnel.innerHTML=journey.map((j,i)=>`
+ <div class="warp-card">
+  <div class="card-number">${String(i+1).padStart(2,'0')}</div>
+  <div class="card-content">
+   <span class="tech-font text-xs ${j.c} mb-2 flex items-center gap-2">${j.live?'<span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>':''}${j.tag}</span>
+   <h3 class="text-xl md:text-2xl font-bold mb-1">${j.t}</h3>
+   <p class="text-base md:text-lg text-gray-300">${j.o}</p>
+   ${j.m?`<p class="text-xs text-gray-500 mt-1 tech-font">${j.m}</p>`:''}
+   <p class="text-xs md:text-sm text-gray-400 mt-3 border-t border-gray-700 pt-3 leading-relaxed">${j.d}</p>
+  </div>
+ </div>`).join('');
+
+/* ---------- UI ---------- */
+const menuBtn=document.getElementById('menu-btn'),menu=document.getElementById('mobile-menu');
+menuBtn.addEventListener('click',()=>{const o=menu.classList.toggle('open');menuBtn.setAttribute('aria-expanded',o);menuBtn.innerHTML=o?'<i class="fas fa-xmark"></i>':'<i class="fas fa-bars"></i>'});
+menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{menu.classList.remove('open');menuBtn.innerHTML='<i class="fas fa-bars"></i>'}));
+
+const cursor=document.getElementById('cursor'),dot=document.getElementById('cursor-dot');
+if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+ document.addEventListener('mousemove',e=>{cursor.style.left=dot.style.left=e.clientX+'px';cursor.style.top=dot.style.top=e.clientY+'px'});
+ document.querySelectorAll('a,button,.glass-panel').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width=cursor.style.height='var(--cursor-hover-size)';cursor.style.backgroundColor='rgba(255,255,255,.1)';dot.style.display='none'});
+  el.addEventListener('mouseleave',()=>{cursor.style.width=cursor.style.height='var(--cursor-size)';cursor.style.backgroundColor='transparent';dot.style.display='block'});
+ });
+}
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ---------- WARP SCROLL ---------- */
+const section=document.getElementById('journey'),cards=document.querySelectorAll('.warp-card');
+function warp(){
+ const r=section.getBoundingClientRect(),h=window.innerHeight;
+ if(!(r.top<=h&&r.bottom>=0))return;
+ const progress=Math.min(1,Math.max(0,-r.top/(r.height-h)));
+ const step=0.6/(cards.length-1);
+ cards.forEach((card,i)=>{
+  const start=i*step,end=start+0.4;
+  let cp=(progress-start)/(end-start);
+  cp=Math.min(1.5,Math.max(0,cp));
+  const z=-1500+cp*2500;
+  let o=0;
+  if(z>-1000&&z<200){o=Math.min(1,1-Math.abs(z+200)/800);if(z>-200&&z<100)o=1}
+  else if(z>=200){o=1-(z-200)/300}
+  card.style.transform=`translate(-50%,-50%) translate3d(0,0,${z}px) rotateX(${(progress-.5)*10}deg) rotateY(${(i%2?-1:1)*5*(1-cp)}deg)`;
+  card.style.opacity=Math.max(0,o);
+  card.classList.toggle('active',z>-300&&z<100);
+ });
+}
+window.addEventListener('scroll',warp,{passive:true});window.addEventListener('resize',warp);warp();
+
+/* ---------- THREE.JS BACKGROUND ---------- */
+const initThree=()=>{
+ const container=document.getElementById('canvas-container');
+ const small=window.innerWidth<768;
+ const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x050505,0.002);
+ const camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,2000);camera.position.z=1000;
+ const renderer=new THREE.WebGLRenderer({alpha:true,antialias:!small});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,small?1.5:2));renderer.setSize(innerWidth,innerHeight);
+ container.appendChild(renderer.domElement);
+ const structure=new THREE.Mesh(new THREE.IcosahedronGeometry(400,2),new THREE.MeshBasicMaterial({color:0x444444,wireframe:true,transparent:true,opacity:.1}));
+ scene.add(structure);
+ const n=small?800:2000,pos=new Float32Array(n*3);
+ for(let i=0;i<n*3;i++)pos[i]=(Math.random()-.5)*4000;
+ const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+ const particles=new THREE.Points(pg,new THREE.PointsMaterial({size:2,color:0xffffff,transparent:true,opacity:.8}));
+ scene.add(particles);
+ const shapes=[];
+ for(let i=0;i<10;i++){
+  const m=new THREE.Mesh(new THREE.OctahedronGeometry(20,0),new THREE.MeshBasicMaterial({color:0x00aaff,wireframe:true}));
+  m.position.set((Math.random()-.5)*1000,(Math.random()-.5)*1000,(Math.random()-.5)*1000);
+  scene.add(m);shapes.push(m);
+ }
+ let mx=0,my=0,sy=0;
+ document.addEventListener('mousemove',e=>{mx=e.clientX-innerWidth/2;my=e.clientY-innerHeight/2});
+ window.addEventListener('scroll',()=>{sy=scrollY},{passive:true});
+ const clock=new THREE.Clock();
+ const animate=()=>{
+  const t=clock.getElapsedTime(),tx=mx*.001,ty=my*.001;
+  structure.rotation.y+=.002;structure.rotation.x+=.001;
+  const s=1+Math.sin(t*.5)*.05;structure.scale.set(s,s,s);
+  particles.rotation.y=t*.05;particles.rotation.x=sy*.0005;
+  structure.rotation.y+=.05*(tx-structure.rotation.y);structure.rotation.x+=.05*(ty-structure.rotation.x);
+  camera.position.z=1000-(sy*.5);
+  shapes.forEach((m,i)=>{m.rotation.x+=.01;m.rotation.y+=.01;m.position.y+=Math.sin(t+i)*.5});
+  renderer.render(scene,camera);requestAnimationFrame(animate);
+ };
+ animate();
+ addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+};
+
+function updateStatus(t){const e=document.getElementById('terminal-status');e.innerText=t+'...';e.style.color='#fff'}
+function resetStatus(){const e=document.getElementById('terminal-status');e.innerText='SYSTEM STANDBY // AWAITING INPUT';e.style.color='#00e5ff'}
+
+let loaderHidden=false;
+function hideLoader(){
+ if(loaderHidden)return;loaderHidden=true;
+ const ld=document.getElementById('loader'),cc=document.getElementById('canvas-container');
+ ld.style.opacity='0';cc.style.opacity='1';
+ setTimeout(()=>ld.style.display='none',500);
+ try{initThree()}catch(e){console.warn('3D background skipped:',e)}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ const pb=document.getElementById('progress-bar');
+ setTimeout(()=>pb.style.width='60%',100);
+ setTimeout(()=>pb.style.width='100%',400);
+ setTimeout(hideLoader,700);
+});
+setTimeout(hideLoader,3000);
+
+/* ---------- AMBIENT BGM (Web Audio, no file) ---------- */
+const btn=document.getElementById('bgm-btn');
+let ctx,master,timer,playing=false,wantsMusic=true,started=false,step=0;
+const chords=[[110,220,329.63,440],[87.31,174.61,261.63,349.23],[98,196,293.66,392],[82.41,164.81,246.94,329.63]];
+function setUI(on){
+  btn.classList.toggle('on',on);
+  btn.setAttribute('aria-pressed',on);
+  btn.querySelector('.bgm-label').textContent=on?'SOUND ON':'SOUND OFF';
+}
+function pad(freqs,t,dur){
+  freqs.forEach(f=>{
+    [-5,5].forEach(det=>{
+      const o=ctx.createOscillator(),g=ctx.createGain(),lp=ctx.createBiquadFilter();
+      o.type='sawtooth';o.frequency.value=f;o.detune.value=det;
+      lp.type='lowpass';lp.frequency.value=700;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(.035,t+dur*.45);
+      g.gain.linearRampToValueAtTime(0,t+dur);
+      o.connect(lp);lp.connect(g);g.connect(master);
+      o.start(t);o.stop(t+dur+.2);
+    });
+  });
+}
+function tick(){pad(chords[step%chords.length],ctx.currentTime,11);step++}
+async function playMusic(){
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return;
+  if(!ctx){
+    ctx=new AC();master=ctx.createGain();master.gain.value=0;
+    const d=ctx.createDelay(1);d.delayTime.value=.45;
+    const fb=ctx.createGain();fb.gain.value=.4;
+    master.connect(ctx.destination);master.connect(d);d.connect(fb);fb.connect(d);d.connect(ctx.destination);
+  }
+  await ctx.resume();
+  master.gain.cancelScheduledValues(ctx.currentTime);
+  master.gain.linearRampToValueAtTime(.9,ctx.currentTime+3);
+  if(!playing){tick();timer=setInterval(tick,8000);playing=true}
+  setUI(true);
+}
+function stopMusic(){
+  if(!ctx)return;
+  master.gain.cancelScheduledValues(ctx.currentTime);
+  master.gain.linearRampToValueAtTime(0,ctx.currentTime+1);
+  clearInterval(timer);playing=false;
+  setTimeout(()=>{if(!playing)ctx.suspend()},1200);
+  setUI(false);
+}
+btn.addEventListener('click',e=>{
+  e.stopPropagation();
+  if(playing){wantsMusic=false;stopMusic()}else{wantsMusic=true;playMusic()}
+});
+['pointerdown','keydown'].forEach(ev=>addEventListener(ev,e=>{
+  if(started||e.target.closest('#bgm-btn'))return;
+  started=true;if(wantsMusic)playMusic();
+}));
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&playing)stopMusic();
+  else if(!document.hidden&&wantsMusic&&started)playMusic();
+});
+</script>
 </body>
 </html>
